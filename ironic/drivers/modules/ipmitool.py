@@ -1574,7 +1574,10 @@ class IPMIConsole(base.ConsoleInterface):
         :raises: ConsoleSubprocessFailed when invoking the subprocess failed
         """
         try:
-            cmd = self._get_ipmi_cmd(driver_info, pw_file=None)
+            path = _console_pwfile_path(driver_info['uuid'])
+            pw_file = console_utils.make_persistent_password_file(
+                path, driver_info['password'] or '\0')
+            cmd = self._get_ipmi_cmd(driver_info, pw_file)
             cmd += ' sol activate'
             start_method(driver_info['uuid'], driver_info['port'], cmd)
         except (exception.ConsoleError,
